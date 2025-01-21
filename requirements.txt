@@ -1,0 +1,6 @@
+streamlit
+pandas
+opencv-python
+speechrecognition
+pyttsx3
+pandasai
