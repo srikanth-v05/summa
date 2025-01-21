@@ -63,8 +63,6 @@ df_a_sec = pd.DataFrame(data_a_sec)
 df_b_sec = pd.DataFrame(data_b_sec)
 df_combined = pd.concat([df_a_sec, df_b_sec], ignore_index=True)
 
-# Load API Key from Streamlit Secrets
-st.secrets.load_if_needed()
 os.environ["PANDASAI_API_KEY"] = st.secrets["PANDASAI_API_KEY"]
 agent = Agent(df_combined)
 
