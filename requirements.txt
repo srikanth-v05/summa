@@ -5,4 +5,4 @@ speechrecognition
 pyttsx3
 pandasai
 numpy
-yaml
+PyYAML
