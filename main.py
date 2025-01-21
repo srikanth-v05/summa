@@ -91,7 +91,7 @@ def listen_for_command():
 
 if st.button('Start Face Detection'):
     st.write("Accessing the camera...")
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
 
     if not cap.isOpened():
         st.write("Error: Could not access the webcam.")
