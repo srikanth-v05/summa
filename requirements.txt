@@ -1,6 +1,7 @@
 streamlit
 pandas
-opencv-python
+opencv-python-headless
 speechrecognition
 pyttsx3
 pandasai
+numpy
