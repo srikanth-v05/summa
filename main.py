@@ -64,6 +64,7 @@ df_b_sec = pd.DataFrame(data_b_sec)
 df_combined = pd.concat([df_a_sec, df_b_sec], ignore_index=True)
 
 # Load API Key from Streamlit Secrets
+st.secrets.load_if_needed()
 os.environ["PANDASAI_API_KEY"] = st.secrets["PANDASAI_API_KEY"]
 agent = Agent(df_combined)
 
@@ -90,7 +91,56 @@ def listen_for_command():
         st.write("Could not request results from Google Speech Recognition service.")
         return None
 
-st.title("Student Data Query System")
+if st.button('Start Face Detection'):
+    st.write("Accessing the camera...")
+    cap = cv2.VideoCapture(0)
+
+    if not cap.isOpened():
+        st.write("Error: Could not access the webcam.")
+    else:
+        st.write("Face detection started. Please allow microphone access.")
+        first_face_saved = False
+        voice_assistant_triggered = False
+
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                st.write("Error: Failed to read frame from webcam.")
+                break
+
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(100, 100))
+
+            for (x, y, w, h) in faces:
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                if not first_face_saved:
+                    first_face_saved = True
+                    st.write("Face detected! Ready for voice commands.")
+                    speak("Face detected. What would you like me to do next?")
+                    voice_assistant_triggered = True
+
+            cv2.imshow('Face Tracker', frame)
+
+            if voice_assistant_triggered:
+                command = listen_for_command()
+                if command:
+                    st.write(f"You said: {command}")
+                    if "exit" in command:
+                        st.write("Exiting as per your request.")
+                        speak("Exiting as per your request.")
+                        break
+                    else:
+                        response = agent.chat(command)
+                        st.write(f"AI Response: {response}")
+                        speak(response)
+
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                st.write("Exiting.")
+                break
+
+        cap.release()
+        cv2.destroyAllWindows()
+
 st.header("Data Query System")
 manual_command = st.text_input("Type your query here:")
 if st.button('Submit Query') and manual_command:
